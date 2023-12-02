@@ -1,38 +1,37 @@
-package test
+package lib
 
 import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/thalmic/gconf/lib"
 )
 
 func TestUse(t *testing.T) {
 
 	Convey("Adds a loaded config to the config map", t, func() {
-		config := lib.NewConfig()
-		config.Use(lib.NewMapLoader(map[string]interface{}{"one": 1}))
+		config := NewConfig()
+		config.Use(NewMapLoader(map[string]interface{}{"one": 1}))
 		So(config.Map, ShouldResemble, map[string]interface{}{"one": 1})
 	})
 
 	Convey("Merges the new config with previous configs", t, func() {
-		config := lib.NewConfig()
-		config.Use(lib.NewMapLoader(map[string]interface{}{"one": 1}))
-		config.Use(lib.NewMapLoader(map[string]interface{}{"two": 2}))
+		config := NewConfig()
+		config.Use(NewMapLoader(map[string]interface{}{"one": 1}))
+		config.Use(NewMapLoader(map[string]interface{}{"two": 2}))
 		So(config.Map, ShouldResemble, map[string]interface{}{"one": 1, "two": 2})
 	})
 
 	Convey("Panics if the config failed to load", t, func() {
-		config := lib.NewConfig()
-		So(func() { config.Use(lib.NewJSONFileLoader("", false)) }, ShouldPanic)
+		config := NewConfig()
+		So(func() { config.Use(NewJSONFileLoader("", false)) }, ShouldPanic)
 	})
 }
 
 func TestToStructure(t *testing.T) {
 
 	Convey("Converts the config map to a structure", t, func() {
-		config := lib.NewConfig()
-		config.Use(lib.NewMapLoader(map[string]interface{}{"One": 1}))
+		config := NewConfig()
+		config.Use(NewMapLoader(map[string]interface{}{"One": 1}))
 
 		structure := struct{ One int }{}
 		err := config.ToStructure(&structure)
@@ -43,15 +42,15 @@ func TestToStructure(t *testing.T) {
 }
 
 func TestGetters(t *testing.T) {
-	config := lib.NewConfig()
-	config.Use(lib.NewMapLoader(map[string]interface{}{
+	config := NewConfig()
+	config.Use(NewMapLoader(map[string]interface{}{
 		"One": 1,
-		"Map": map[string]interface{}{
+		"values": map[string]interface{}{
 			"Two": "Hi",
 		},
 	}))
 
-	Convey("Get", t, func() {
+	Convey("get", t, func() {
 
 		Convey("Gets a top level value", func() {
 			value, err := config.Get("One")
@@ -60,7 +59,7 @@ func TestGetters(t *testing.T) {
 		})
 
 		Convey("Gets a nested value from the underlying map", func() {
-			value, err := config.Get("Map:Two")
+			value, err := config.Get("values:Two")
 			So(value, ShouldEqual, "Hi")
 			So(err, ShouldBeNil)
 		})
@@ -75,7 +74,7 @@ func TestGetters(t *testing.T) {
 	Convey("GetSubConfig", t, func() {
 
 		Convey("Constructs a new config object containing the sub-map", func() {
-			value, err := config.GetSubConfig("Map")
+			value, err := config.GetSubConfig("values")
 			So(value.Map, ShouldResemble, map[string]interface{}{"Two": "Hi"})
 			So(err, ShouldBeNil)
 		})

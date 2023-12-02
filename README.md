@@ -1,23 +1,18 @@
 # gconf
 
-[![GoDoc](https://godoc.org/github.com/thalmic/gconf?status.svg)](https://godoc.org/github.com/thalmic/gconf)
+[![GoDoc](https://godoc.org/github.com/miratronix/gconf?status.svg)](https://godoc.org/github.com/miratronix/gconf)
 
 A simple hierarchical configuration reader, heavily inspired by [nconf](https://github.com/indexzero/nconf).
 
 ## Installation
-Installation is possible via dep (recommended):
+Simply fetch the package with `go get`:
 ```
-dep ensure -add github.com/thalmic/gconf
-```
-
-Or via `go get`:
-```
-go get github.com/thalmic/gconf
+go get github.com/miratronix/gconf
 ```
 
 ## Basic Usage
 ```go
-import "github.com/thalmic/gconf"
+import "github.com/miratronix/gconf"
 
 // Construct
 config := gconf.NewConfig() // Create a brand new set of configs
@@ -27,6 +22,7 @@ config := gconf.Instance()  // Or use a built in singleton
 config.Use(gconf.Arguments("separator", "prefix"))                      // From command line arguments
 config.Use(gconf.Environment(false, "separator", "prefix"))             // From environment variables
 config.Use(gconf.JSONFile("some_file.json", false))                     // From a JSON file
+config.Use(gconf.YAMLFile("some_file.yaml", false))                     // From a YAML file
 config.Use(gconf.Map(map[string]interface{}{ "SomeKey": "SomeValue" })) // From an arbitrary map
 
 // Convert to a structure or grab the final underlying map
@@ -55,7 +51,7 @@ config.Set("key", "value")
 ```
 
 ## Loaders
-Four config loaders come with this library. More information about these can be found below.
+Five config loaders come with this library. More information about these can be found below.
 
 ### Arguments
 The arguments loader (`gconf.Arguments()`) has 2 parameters:
@@ -81,6 +77,11 @@ PREFIXTEST=1 go run main.go // Same as above as long as prefix is set to "PREFIX
 ### JSONFile
 The JSON file loader (`gconf.JSONFile`) has 2 parameters:
 * filePath: The file path of the JSON file to use.
+* parseDurations: A flag indicating whether strings matching the [time.ParseDuration](https://golang.org/pkg/time/#ParseDuration) format should be parsed to a `time.Duration` representation.
+
+### YAMLFile
+The YAML file loader (`gconf.YAMLFile`) has 2 parameters:
+* filePath: The file path of the YAML file to use.
 * parseDurations: A flag indicating whether strings matching the [time.ParseDuration](https://golang.org/pkg/time/#ParseDuration) format should be parsed to a `time.Duration` representation.
 
 ### Map

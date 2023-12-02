@@ -7,26 +7,26 @@ import (
 
 // ArgumentLoader defines a loader that loads configuration from command line arguments
 type ArgumentLoader struct {
-	LowerCase bool
-	Prefix    string
-	Separator string
+	lowerCase bool
+	prefix    string
+	separator string
 }
 
 // NewArgumentLoader creates a new argument loader
 func NewArgumentLoader(separator string, prefix string) *ArgumentLoader {
 	return &ArgumentLoader{
-		Prefix:    prefix,
-		Separator: separator,
+		prefix:    prefix,
+		separator: separator,
 	}
 }
 
 // Load loads environment variables into a configuration map
 func (loader *ArgumentLoader) Load() (map[string]interface{}, error) {
-	return loader.ParseArguments(os.Args[1:])
+	return loader.parseArguments(os.Args[1:])
 }
 
-// ParseArguments parses command line arguments into valid types
-func (loader *ArgumentLoader) ParseArguments(args []string) (map[string]interface{}, error) {
+// parseArguments parses command line arguments into valid types
+func (loader *ArgumentLoader) parseArguments(args []string) (map[string]interface{}, error) {
 	config := map[string]interface{}{}
 
 	for _, arg := range args {
@@ -49,21 +49,21 @@ func (loader *ArgumentLoader) ParseArguments(args []string) (map[string]interfac
 		value := parts[1]
 
 		// If we have a prefix and the key doesn't match it, ignore this line
-		if len(loader.Prefix) > 0 && !strings.HasPrefix(key, loader.Prefix) {
+		if len(loader.prefix) > 0 && !strings.HasPrefix(key, loader.prefix) {
 			continue
 		}
 
 		// Trim the prefix off the argument name
-		trimmedKey := strings.TrimPrefix(key, loader.Prefix)
+		trimmedKey := strings.TrimPrefix(key, loader.prefix)
 
 		// Separate it on the separator if required
 		separatedKey := []string{trimmedKey}
-		if len(loader.Separator) > 0 {
-			separatedKey = strings.Split(trimmedKey, loader.Separator)
+		if len(loader.separator) > 0 {
+			separatedKey = strings.Split(trimmedKey, loader.separator)
 		}
 
 		// Parse the value and add it to the final config map
-		_, err := Set(config, separatedKey, ParseString(value))
+		_, err := set(config, separatedKey, parseString(value))
 		if err != nil {
 			return config, err
 		}

@@ -7,27 +7,27 @@ import (
 
 // EnvironmentLoader defines a loader that loads configurations from environment variables
 type EnvironmentLoader struct {
-	LowerCase bool
-	Prefix    string
-	Separator string
+	lowerCase bool
+	prefix    string
+	separator string
 }
 
 // NewEnvironmentLoader creates a new environment loader
 func NewEnvironmentLoader(lowerCase bool, separator string, prefix string) *EnvironmentLoader {
 	return &EnvironmentLoader{
-		LowerCase: lowerCase,
-		Prefix:    prefix,
-		Separator: separator,
+		lowerCase: lowerCase,
+		prefix:    prefix,
+		separator: separator,
 	}
 }
 
 // Load loads environment variables
 func (loader *EnvironmentLoader) Load() (map[string]interface{}, error) {
-	return loader.ParseEnvironment(os.Environ())
+	return loader.parseEnvironment(os.Environ())
 }
 
-// Parse environment parses environment variables into a configuration map
-func (loader *EnvironmentLoader) ParseEnvironment(environmentData []string) (map[string]interface{}, error) {
+// parseEnvironment parses environment variables into a configuration map
+func (loader *EnvironmentLoader) parseEnvironment(environmentData []string) (map[string]interface{}, error) {
 	config := map[string]interface{}{}
 
 	for _, environmentLine := range environmentData {
@@ -41,13 +41,13 @@ func (loader *EnvironmentLoader) ParseEnvironment(environmentData []string) (map
 		}
 
 		// If we have a configured prefix and the key doesn't match it, ignore this line
-		if len(loader.Prefix) > 0 && !strings.HasPrefix(keyValue[0], loader.Prefix) {
+		if len(loader.prefix) > 0 && !strings.HasPrefix(keyValue[0], loader.prefix) {
 			continue
 		}
 
 		// Trim the prefix off the key and trim the separator if it's there as a prefix (that would result in an empty key)
-		trimmedKey := strings.TrimPrefix(keyValue[0], loader.Prefix)
-		trimmedKey = strings.TrimPrefix(trimmedKey, loader.Separator)
+		trimmedKey := strings.TrimPrefix(keyValue[0], loader.prefix)
+		trimmedKey = strings.TrimPrefix(trimmedKey, loader.separator)
 
 		// Ignore keys that are empty after trimming
 		if len(trimmedKey) == 0 {
@@ -55,19 +55,19 @@ func (loader *EnvironmentLoader) ParseEnvironment(environmentData []string) (map
 		}
 
 		// Lowercase the key if that option is enabled
-		if loader.LowerCase {
+		if loader.lowerCase {
 			trimmedKey = strings.ToLower(trimmedKey)
 		}
 
 		// Separate it on the separator if required
 		separatedKeys := []string{trimmedKey}
-		if len(loader.Separator) > 0 {
-			separatedKeys = strings.Split(trimmedKey, loader.Separator)
+		if len(loader.separator) > 0 {
+			separatedKeys = strings.Split(trimmedKey, loader.separator)
 		}
 
-		// Set the nested value in the map
-		value := ParseString(keyValue[1])
-		_, err := Set(config, separatedKeys, value)
+		// set the nested value in the map
+		value := parseString(keyValue[1])
+		_, err := set(config, separatedKeys, value)
 		if err != nil {
 			return config, err
 		}

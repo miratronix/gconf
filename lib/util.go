@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-// Has checks if the supplied map contains the supplied key
-func Has(m map[string]interface{}, key string) bool {
+// has checks if the supplied map contains the supplied key
+func has(m map[string]interface{}, key string) bool {
 	_, keyExists := m[key]
 	return keyExists
 }
 
-// Set sets the value of a nested key in the supplied map
-func Set(m map[string]interface{}, keys []string, value interface{}) (map[string]interface{}, error) {
+// set sets the value of a nested key in the supplied map
+func set(m map[string]interface{}, keys []string, value interface{}) (map[string]interface{}, error) {
 
 	// If we're not adding interface{} more keys, return this map
 	if len(keys) == 0 {
@@ -24,7 +24,7 @@ func Set(m map[string]interface{}, keys []string, value interface{}) (map[string
 	}
 
 	key := keys[0]
-	keyExists := Has(m, key)
+	keyExists := has(m, key)
 
 	// Last key, just write it in and return
 	if len(keys) == 1 {
@@ -52,7 +52,7 @@ func Set(m map[string]interface{}, keys []string, value interface{}) (map[string
 	}
 
 	// Recurse and add the next nested value
-	submap, err := Set(castValue, keys[1:], value)
+	submap, err := set(castValue, keys[1:], value)
 	if err != nil {
 		return m, err
 	}
@@ -61,11 +61,11 @@ func Set(m map[string]interface{}, keys []string, value interface{}) (map[string
 	return m, nil
 }
 
-// Get gets the value of a nested key in the supplied map
-func Get(m map[string]interface{}, keys []string) (interface{}, error) {
+// get gets the value of a nested key in the supplied map
+func get(m map[string]interface{}, keys []string) (interface{}, error) {
 
 	key := keys[0]
-	keyExists := Has(m, key)
+	keyExists := has(m, key)
 
 	if !keyExists {
 		return nil, fmt.Errorf("key '%s' was not found", key)
@@ -82,16 +82,16 @@ func Get(m map[string]interface{}, keys []string) (interface{}, error) {
 		return nil, fmt.Errorf("key '%s' is not a map that can contain sub keys", key)
 	}
 
-	return Get(mapValue, keys[1:])
+	return get(mapValue, keys[1:])
 }
 
-// Merge merges two maps recursively
-func Merge(map1 map[string]interface{}, map2 map[string]interface{}) map[string]interface{} {
+// merge merges two maps recursively
+func merge(map1 map[string]interface{}, map2 map[string]interface{}) map[string]interface{} {
 
 	for key, value := range map2 {
 
 		// If we don't have the key in map 1, just take the whole thing
-		if !Has(map1, key) {
+		if !has(map1, key) {
 			map1[key] = value
 			continue
 		}
@@ -106,14 +106,14 @@ func Merge(map1 map[string]interface{}, map2 map[string]interface{}) map[string]
 		}
 
 		// Both of them are maps, keep merging
-		map1[key] = Merge(map1Value, map2Value)
+		map1[key] = merge(map1Value, map2Value)
 	}
 
 	return map1
 }
 
-// ParseString parses a string into a variety of types
-func ParseString(value string) interface{} {
+// parseString parses a string into a variety of types
+func parseString(value string) interface{} {
 
 	// Check if it's an int
 	intValue, err := strconv.ParseInt(value, 10, 0)
@@ -151,11 +151,11 @@ func ParseString(value string) interface{} {
 	}
 
 	// Finally, try it as a duration
-	return ParseDurationString(value)
+	return parseDurationString(value)
 }
 
-// ParseDurationString attempts to parse a string into a duration, returning the original value if parsing failed
-func ParseDurationString(value string) interface{} {
+// parseDurationString attempts to parse a string into a duration, returning the original value if parsing failed
+func parseDurationString(value string) interface{} {
 	durationValue, err := time.ParseDuration(value)
 	if err == nil {
 		return durationValue
@@ -163,13 +163,37 @@ func ParseDurationString(value string) interface{} {
 	return value
 }
 
-// SplitKey splits the supplied key into an array
-func SplitKey(key string) []string {
+// convertDurationStrings converts all the string durations in the supplied map to duration values
+func convertDurationStrings(m map[string]interface{}) map[string]interface{} {
+	for key, value := range m {
+
+		// If the value is a string, apply duration parsing
+		stringValue, castStringValue := value.(string)
+		if castStringValue {
+			m[key] = parseDurationString(stringValue)
+			continue
+		}
+
+		// If the value is not a map, keep going
+		mapValue, castMapValue := value.(map[string]interface{})
+		if !castMapValue {
+			continue
+		}
+
+		// Value is a map, recurse
+		m[key] = convertDurationStrings(mapValue)
+	}
+
+	return m
+}
+
+// splitKey splits the supplied key into an array
+func splitKey(key string) []string {
 	return strings.Split(key, ":")
 }
 
-// CastMap casts a value to a map
-func CastMap(obj interface{}) (map[string]interface{}, error) {
+// castMap casts a value to a map
+func castMap(obj interface{}) (map[string]interface{}, error) {
 	value, cast := obj.(map[string]interface{})
 	if !cast {
 		return nil, errors.New("failed to cast value to map")
@@ -177,8 +201,8 @@ func CastMap(obj interface{}) (map[string]interface{}, error) {
 	return value, nil
 }
 
-// CastSlice casts a value to a slice
-func CastSlice(obj interface{}) ([]interface{}, error) {
+// castSlice casts a value to a slice
+func castSlice(obj interface{}) ([]interface{}, error) {
 	value, cast := obj.([]interface{})
 	if !cast {
 		return nil, errors.New("failed to cast value to slice")
@@ -186,8 +210,8 @@ func CastSlice(obj interface{}) ([]interface{}, error) {
 	return value, nil
 }
 
-// CastStringSlice casts a value to a string slice
-func CastStringSlice(obj interface{}) ([]string, error) {
+// castStringSlice casts a value to a string slice
+func castStringSlice(obj interface{}) ([]string, error) {
 	value, cast := obj.([]string)
 	if !cast {
 		return nil, errors.New("failed to cast value to string slice")
@@ -195,8 +219,8 @@ func CastStringSlice(obj interface{}) ([]string, error) {
 	return value, nil
 }
 
-// CastString casts a value to a string
-func CastString(obj interface{}) (string, error) {
+// castString casts a value to a string
+func castString(obj interface{}) (string, error) {
 	value, cast := obj.(string)
 	if !cast {
 		return "", errors.New("failed to cast value to string")
@@ -204,8 +228,8 @@ func CastString(obj interface{}) (string, error) {
 	return value, nil
 }
 
-// CastIntegerSlice casts a value to an integer slice
-func CastIntegerSlice(obj interface{}) ([]int, error) {
+// castIntegerSlice casts a value to an integer slice
+func castIntegerSlice(obj interface{}) ([]int, error) {
 	value, cast := obj.([]int)
 	if !cast {
 
@@ -230,8 +254,8 @@ func CastIntegerSlice(obj interface{}) ([]int, error) {
 	return value, nil
 }
 
-// CastInteger casts a value to an integer
-func CastInteger(obj interface{}) (int, error) {
+// castInteger casts a value to an integer
+func castInteger(obj interface{}) (int, error) {
 	value, cast := obj.(int) // Try a regular integer cast
 	if !cast {
 
@@ -250,8 +274,8 @@ func CastInteger(obj interface{}) (int, error) {
 	return value, nil
 }
 
-// CastBooleanSlice casts a value to a boolean slice
-func CastBooleanSlice(obj interface{}) ([]bool, error) {
+// castBooleanSlice casts a value to a boolean slice
+func castBooleanSlice(obj interface{}) ([]bool, error) {
 	value, cast := obj.([]bool)
 	if !cast {
 		return nil, errors.New("failed to cast value to boolean slice")
@@ -259,8 +283,8 @@ func CastBooleanSlice(obj interface{}) ([]bool, error) {
 	return value, nil
 }
 
-// CastBoolean casts a value to a boolean
-func CastBoolean(obj interface{}) (bool, error) {
+// castBoolean casts a value to a boolean
+func castBoolean(obj interface{}) (bool, error) {
 	value, cast := obj.(bool)
 	if !cast {
 		return false, errors.New("failed to cast value to boolean")
@@ -268,8 +292,8 @@ func CastBoolean(obj interface{}) (bool, error) {
 	return value, nil
 }
 
-// CastFloatSlice casts a value to a float slice
-func CastFloatSlice(obj interface{}) ([]float64, error) {
+// castFloatSlice casts a value to a float slice
+func castFloatSlice(obj interface{}) ([]float64, error) {
 	value, cast := obj.([]float64)
 	if !cast {
 		return nil, errors.New("failed to cast value to float slice")
@@ -277,8 +301,8 @@ func CastFloatSlice(obj interface{}) ([]float64, error) {
 	return value, nil
 }
 
-// CastFloat casts a value to a float
-func CastFloat(obj interface{}) (float64, error) {
+// castFloat casts a value to a float
+func castFloat(obj interface{}) (float64, error) {
 	value, cast := obj.(float64)
 	if !cast {
 		return 0, errors.New("failed to cast value to float")

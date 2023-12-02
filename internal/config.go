@@ -1,4 +1,4 @@
-package lib
+package internal
 
 import "github.com/mitchellh/mapstructure"
 

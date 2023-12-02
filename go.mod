@@ -1,4 +1,4 @@
-module gconf
+module github.com/miratronix/gconf
 
 go 1.18
 

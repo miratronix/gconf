@@ -45,12 +45,12 @@ func TestGetters(t *testing.T) {
 	config := NewConfig()
 	config.Use(NewMapLoader(map[string]interface{}{
 		"One": 1,
-		"values": map[string]interface{}{
+		"Map": map[string]interface{}{
 			"Two": "Hi",
 		},
 	}))
 
-	Convey("get", t, func() {
+	Convey("Get", t, func() {
 
 		Convey("Gets a top level value", func() {
 			value, err := config.Get("One")
@@ -59,7 +59,7 @@ func TestGetters(t *testing.T) {
 		})
 
 		Convey("Gets a nested value from the underlying map", func() {
-			value, err := config.Get("values:Two")
+			value, err := config.Get("Map:Two")
 			So(value, ShouldEqual, "Hi")
 			So(err, ShouldBeNil)
 		})
@@ -74,7 +74,7 @@ func TestGetters(t *testing.T) {
 	Convey("GetSubConfig", t, func() {
 
 		Convey("Constructs a new config object containing the sub-map", func() {
-			value, err := config.GetSubConfig("values")
+			value, err := config.GetSubConfig("Map")
 			So(value.Map, ShouldResemble, map[string]interface{}{"Two": "Hi"})
 			So(err, ShouldBeNil)
 		})

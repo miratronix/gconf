@@ -1,7 +1,7 @@
 package gconf
 
 import (
-	"gconf/internal"
+	"github.com/miratronix/gconf/internal"
 	"sync"
 )
 

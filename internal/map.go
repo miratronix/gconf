@@ -1,4 +1,4 @@
-package lib
+package internal
 
 // MapLoader defines a loader that loads configurations from a map
 type MapLoader struct {

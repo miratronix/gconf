@@ -4,9 +4,7 @@ jobs:
     docker: 
       - image: circleci/golang:1.10.1
     
-    working_directory: /go/src/github.com/thalmic/gconf
+    working_directory: /go/src/github.com/miratronix/gconf
     steps:
-      - run: go get -u github.com/golang/dep/cmd/dep
       - checkout
-      - run: dep ensure
-      - run: go test -v ./test/...
+      - run: go test ./...

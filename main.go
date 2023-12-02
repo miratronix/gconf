@@ -1,47 +1,47 @@
 package gconf
 
 import (
-	"gconf/lib"
+	"gconf/internal"
 	"sync"
 )
 
-var configSingleton *lib.Config
+var configSingleton *internal.Config
 var once sync.Once
 
 // New creates a new configuration structure
-func New() *lib.Config {
-	return lib.NewConfig()
+func New() *internal.Config {
+	return internal.NewConfig()
 }
 
 // Instance returns a singleton configuration structure instance
-func Instance() *lib.Config {
+func Instance() *internal.Config {
 	once.Do(func() {
-		configSingleton = lib.NewConfig()
+		configSingleton = internal.NewConfig()
 	})
 	return configSingleton
 }
 
 // Arguments creates a new command line argument loader
-func Arguments(separator string, prefix string) *lib.ArgumentLoader {
-	return lib.NewArgumentLoader(separator, prefix)
+func Arguments(separator string, prefix string) *internal.ArgumentLoader {
+	return internal.NewArgumentLoader(separator, prefix)
 }
 
 // Environment creates a new environment variable loader
-func Environment(lowerCase bool, separator string, prefix string) *lib.EnvironmentLoader {
-	return lib.NewEnvironmentLoader(lowerCase, separator, prefix)
+func Environment(lowerCase bool, separator string, prefix string) *internal.EnvironmentLoader {
+	return internal.NewEnvironmentLoader(lowerCase, separator, prefix)
 }
 
 // JSONFile creates a new JSON file loader
-func JSONFile(filePath string, parseDurations bool) *lib.JSONFileLoader {
-	return lib.NewJSONFileLoader(filePath, parseDurations)
+func JSONFile(filePath string, parseDurations bool) *internal.JSONFileLoader {
+	return internal.NewJSONFileLoader(filePath, parseDurations)
 }
 
 // YAMLFile creates a new YAML file loader
-func YAMLFile(filePath string, parseDurations bool) *lib.YAMLFileLoader {
-	return lib.NewYAMLFileLoader(filePath, parseDurations)
+func YAMLFile(filePath string, parseDurations bool) *internal.YAMLFileLoader {
+	return internal.NewYAMLFileLoader(filePath, parseDurations)
 }
 
 // Map creates a new map laoder
-func Map(stringMap map[string]interface{}) *lib.MapLoader {
-	return lib.NewMapLoader(stringMap)
+func Map(stringMap map[string]interface{}) *internal.MapLoader {
+	return internal.NewMapLoader(stringMap)
 }

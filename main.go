@@ -1,7 +1,7 @@
 package gconf
 
 import (
-	"github.com/thalmic/gconf/lib"
+	"gconf/lib"
 	"sync"
 )
 
@@ -34,6 +34,11 @@ func Environment(lowerCase bool, separator string, prefix string) *lib.Environme
 // JSONFile creates a new JSON file loader
 func JSONFile(filePath string, parseDurations bool) *lib.JSONFileLoader {
 	return lib.NewJSONFileLoader(filePath, parseDurations)
+}
+
+// YAMLFile creates a new YAML file loader
+func YAMLFile(filePath string, parseDurations bool) *lib.YAMLFileLoader {
+	return lib.NewYAMLFileLoader(filePath, parseDurations)
 }
 
 // Map creates a new map laoder

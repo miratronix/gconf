@@ -29,7 +29,7 @@ func (config *Config) Use(loader Loader) {
 	}
 
 	// Merge it with our existing values
-	Merge(config.Map, loadedMap)
+	merge(config.Map, loadedMap)
 }
 
 // ToStructure maps the loaded configuration to a structure
@@ -39,7 +39,7 @@ func (config *Config) ToStructure(structure interface{}) error {
 
 // Get gets a key from the loaded configuration
 func (config *Config) Get(key string) (interface{}, error) {
-	return Get(config.Map, SplitKey(key))
+	return get(config.Map, splitKey(key))
 }
 
 // GetSubConfig gets a loaded submap as a configuration structure
@@ -59,7 +59,7 @@ func (config *Config) GetMap(key string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return CastMap(value)
+	return castMap(value)
 }
 
 // GetSlice gets a slice from the loaded configuration
@@ -68,7 +68,7 @@ func (config *Config) GetSlice(key string) ([]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return CastSlice(value)
+	return castSlice(value)
 }
 
 // GetStringSlice gets a string slice from the loaded configuration
@@ -77,7 +77,7 @@ func (config *Config) GetStringSlice(key string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return CastStringSlice(value)
+	return castStringSlice(value)
 }
 
 // GetString gets a string from the loaded configuration
@@ -86,7 +86,7 @@ func (config *Config) GetString(key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return CastString(value)
+	return castString(value)
 }
 
 // GetIntegerSlice gets a integer slice from the loaded configuration
@@ -95,7 +95,7 @@ func (config *Config) GetIntegerSlice(key string) ([]int, error) {
 	if err != nil {
 		return nil, err
 	}
-	return CastIntegerSlice(value)
+	return castIntegerSlice(value)
 }
 
 // GetInteger gets a integer from the loaded configuration
@@ -104,7 +104,7 @@ func (config *Config) GetInteger(key string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return CastInteger(value)
+	return castInteger(value)
 }
 
 // GetBooleanSlice gets a boolean slice from the loaded configuration
@@ -113,7 +113,7 @@ func (config *Config) GetBooleanSlice(key string) ([]bool, error) {
 	if err != nil {
 		return nil, err
 	}
-	return CastBooleanSlice(value)
+	return castBooleanSlice(value)
 }
 
 // GetBoolean gets a boolean from the loaded configuration
@@ -122,7 +122,7 @@ func (config *Config) GetBoolean(key string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return CastBoolean(value)
+	return castBoolean(value)
 }
 
 // GetFloatSlice gets a float slice from the loaded configuration
@@ -131,7 +131,7 @@ func (config *Config) GetFloatSlice(key string) ([]float64, error) {
 	if err != nil {
 		return nil, err
 	}
-	return CastFloatSlice(value)
+	return castFloatSlice(value)
 }
 
 // GetFloat gets a float from the loaded configuration
@@ -140,11 +140,11 @@ func (config *Config) GetFloat(key string) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return CastFloat(value)
+	return castFloat(value)
 }
 
 // Set sets a value in the loaded configuration
 func (config *Config) Set(key string, value interface{}) error {
-	_, err := Set(config.Map, SplitKey(key), value)
+	_, err := set(config.Map, splitKey(key), value)
 	return err
 }

@@ -28,7 +28,7 @@ func (config *Config) Use(loader Loader) {
 		panic(err)
 	}
 
-	// merge it with our existing values
+	// Merge it with our existing values
 	merge(config.Map, loadedMap)
 }
 

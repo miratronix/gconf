@@ -191,63 +191,126 @@ func TestConvertDurationStrings(t *testing.T) {
 
 func TestCasts(t *testing.T) {
 
-	Convey("castMap", t, func() {
+	Convey("cast", t, func() {
 
-		Convey("Casts an empty interface into a map", func() {
-			result, err := castMap(map[string]interface{}{})
-			So(result, ShouldResemble, map[string]interface{}{})
-			So(err, ShouldBeNil)
+		Convey("Casts maps", func() {
+
+			Convey("Casts an empty interface into a map", func() {
+				result, err := cast[map[string]interface{}](map[string]interface{}{})
+				So(result, ShouldResemble, map[string]interface{}{})
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[map[string]interface{}](5)
+				So(result, ShouldBeNil)
+				So(err, ShouldNotBeNil)
+			})
 		})
 
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castMap(5)
-			So(result, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-		})
-	})
+		Convey("Casts slices", func() {
 
-	Convey("castSlice", t, func() {
+			Convey("Casts an empty interface into a slice", func() {
+				result, err := cast[[]interface{}]([]interface{}{1, "two"})
+				So(result, ShouldResemble, []interface{}{1, "two"})
+				So(err, ShouldBeNil)
+			})
 
-		Convey("Casts an empty interface into a slice", func() {
-			result, err := castSlice([]interface{}{1, "two"})
-			So(result, ShouldResemble, []interface{}{1, "two"})
-			So(err, ShouldBeNil)
-		})
-
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castSlice(5)
-			So(result, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-		})
-	})
-
-	Convey("castStringSlice", t, func() {
-
-		Convey("Casts an empty interface into a string slice", func() {
-			result, err := castStringSlice([]string{"one", "two"})
-			So(result, ShouldResemble, []string{"one", "two"})
-			So(err, ShouldBeNil)
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[[]interface{}](5)
+				So(result, ShouldBeNil)
+				So(err, ShouldNotBeNil)
+			})
 		})
 
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castStringSlice(5)
-			So(result, ShouldBeNil)
-			So(err, ShouldNotBeNil)
+		Convey("Casts string slices", func() {
+
+			Convey("Casts an empty interface into a string slice", func() {
+				result, err := cast[[]string]([]string{"one", "two"})
+				So(result, ShouldResemble, []string{"one", "two"})
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[[]string](5)
+				So(result, ShouldBeNil)
+				So(err, ShouldNotBeNil)
+			})
 		})
-	})
 
-	Convey("castString", t, func() {
+		Convey("Casts strings", func() {
 
-		Convey("Casts an empty interface into a string", func() {
-			result, err := castString("one")
-			So(result, ShouldEqual, "one")
-			So(err, ShouldBeNil)
+			Convey("Casts an empty interface into a string", func() {
+				result, err := cast[string]("one")
+				So(result, ShouldEqual, "one")
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[string](5)
+				So(result, ShouldBeZeroValue)
+				So(err, ShouldNotBeNil)
+			})
 		})
 
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castString(5)
-			So(result, ShouldBeZeroValue)
-			So(err, ShouldNotBeNil)
+		Convey("Casts boolean slices", func() {
+
+			Convey("Casts an empty interface into a boolean slice", func() {
+				result, err := cast[[]bool]([]bool{true, false})
+				So(result, ShouldResemble, []bool{true, false})
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[[]bool](5)
+				So(result, ShouldBeNil)
+				So(err, ShouldNotBeNil)
+			})
+		})
+
+		Convey("Casts booleans", func() {
+
+			Convey("Casts an empty interface into a boolean", func() {
+				result, err := cast[bool](true)
+				So(result, ShouldEqual, true)
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[bool](5)
+				So(result, ShouldBeZeroValue)
+				So(err, ShouldNotBeNil)
+			})
+		})
+
+		Convey("Casts float slices", func() {
+
+			Convey("Casts an empty interface into a float slice", func() {
+				result, err := cast[[]float64]([]float64{1, 2})
+				So(result, ShouldResemble, []float64{1, 2})
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[[]float64](5)
+				So(result, ShouldBeNil)
+				So(err, ShouldNotBeNil)
+			})
+		})
+
+		Convey("Casts floats", func() {
+
+			Convey("Casts an empty interface into a float", func() {
+				result, err := cast[float64](3.3)
+				So(result, ShouldEqual, 3.3)
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Returns an error if the cast can't be done", func() {
+				result, err := cast[float64]("Hello")
+				So(result, ShouldBeZeroValue)
+				So(err, ShouldNotBeNil)
+			})
 		})
 	})
 
@@ -300,66 +363,6 @@ func TestCasts(t *testing.T) {
 
 		Convey("Returns an error if the cast can't be done", func() {
 			result, err := castInteger("Hello")
-			So(result, ShouldBeZeroValue)
-			So(err, ShouldNotBeNil)
-		})
-	})
-
-	Convey("castBooleanSlice", t, func() {
-
-		Convey("Casts an empty interface into a boolean slice", func() {
-			result, err := castBooleanSlice([]bool{true, false})
-			So(result, ShouldResemble, []bool{true, false})
-			So(err, ShouldBeNil)
-		})
-
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castBooleanSlice(5)
-			So(result, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-		})
-	})
-
-	Convey("castBoolean", t, func() {
-
-		Convey("Casts an empty interface into a boolean", func() {
-			result, err := castBoolean(true)
-			So(result, ShouldEqual, true)
-			So(err, ShouldBeNil)
-		})
-
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castBoolean(5)
-			So(result, ShouldBeZeroValue)
-			So(err, ShouldNotBeNil)
-		})
-	})
-
-	Convey("castFloatSlice", t, func() {
-
-		Convey("Casts an empty interface into a float slice", func() {
-			result, err := castFloatSlice([]float64{1, 2})
-			So(result, ShouldResemble, []float64{1, 2})
-			So(err, ShouldBeNil)
-		})
-
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castFloatSlice(5)
-			So(result, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-		})
-	})
-
-	Convey("castFloat", t, func() {
-
-		Convey("Casts an empty interface into a float", func() {
-			result, err := castFloat(3.3)
-			So(result, ShouldEqual, 3.3)
-			So(err, ShouldBeNil)
-		})
-
-		Convey("Returns an error if the cast can't be done", func() {
-			result, err := castFloat("Hello")
 			So(result, ShouldBeZeroValue)
 			So(err, ShouldNotBeNil)
 		})

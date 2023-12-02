@@ -65,7 +65,7 @@ func (loader *EnvironmentLoader) parseEnvironment(environmentData []string) (map
 			separatedKeys = strings.Split(trimmedKey, loader.separator)
 		}
 
-		// set the nested value in the map
+		// Set the nested value in the map
 		value := parseString(keyValue[1])
 		_, err := set(config, separatedKeys, value)
 		if err != nil {

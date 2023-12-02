@@ -75,17 +75,17 @@ PREFIXTEST=1 go run main.go // Same as above as long as prefix is set to "PREFIX
 ```
 
 ### JSONFile
-The JSON file loader (`gconf.JSONFile`) has 2 parameters:
+The JSON file loader (`gconf.JSONFile()`) has 2 parameters:
 * filePath: The file path of the JSON file to use.
 * parseDurations: A flag indicating whether strings matching the [time.ParseDuration](https://golang.org/pkg/time/#ParseDuration) format should be parsed to a `time.Duration` representation.
 
 ### YAMLFile
-The YAML file loader (`gconf.YAMLFile`) has 2 parameters:
+The YAML file loader (`gconf.YAMLFile()`) has 2 parameters:
 * filePath: The file path of the YAML file to use.
 * parseDurations: A flag indicating whether strings matching the [time.ParseDuration](https://golang.org/pkg/time/#ParseDuration) format should be parsed to a `time.Duration` representation.
 
 ### Map
-The map loader (`gconf.Map`) only has 1 parameter:
+The map loader (`gconf.Map()`) only has 1 parameter:
 * stringMap: The `map[string]interface{}` to add to the config.
 This loader should be used for defaulting values not found in any other loaders.
 

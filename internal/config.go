@@ -59,7 +59,7 @@ func (config *Config) GetMap(key string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return castMap(value)
+	return cast[map[string]interface{}](value)
 }
 
 // GetSlice gets a slice from the loaded configuration
@@ -68,7 +68,7 @@ func (config *Config) GetSlice(key string) ([]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return castSlice(value)
+	return cast[[]interface{}](value)
 }
 
 // GetStringSlice gets a string slice from the loaded configuration
@@ -77,7 +77,7 @@ func (config *Config) GetStringSlice(key string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return castStringSlice(value)
+	return cast[[]string](value)
 }
 
 // GetString gets a string from the loaded configuration
@@ -86,7 +86,7 @@ func (config *Config) GetString(key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return castString(value)
+	return cast[string](value)
 }
 
 // GetIntegerSlice gets a integer slice from the loaded configuration
@@ -113,7 +113,7 @@ func (config *Config) GetBooleanSlice(key string) ([]bool, error) {
 	if err != nil {
 		return nil, err
 	}
-	return castBooleanSlice(value)
+	return cast[[]bool](value)
 }
 
 // GetBoolean gets a boolean from the loaded configuration
@@ -122,7 +122,7 @@ func (config *Config) GetBoolean(key string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return castBoolean(value)
+	return cast[bool](value)
 }
 
 // GetFloatSlice gets a float slice from the loaded configuration
@@ -131,7 +131,7 @@ func (config *Config) GetFloatSlice(key string) ([]float64, error) {
 	if err != nil {
 		return nil, err
 	}
-	return castFloatSlice(value)
+	return cast[[]float64](value)
 }
 
 // GetFloat gets a float from the loaded configuration
@@ -140,7 +140,7 @@ func (config *Config) GetFloat(key string) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return castFloat(value)
+	return cast[float64](value)
 }
 
 // Set sets a value in the loaded configuration

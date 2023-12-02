@@ -192,120 +192,61 @@ func splitKey(key string) []string {
 	return strings.Split(key, ":")
 }
 
-// castMap casts a value to a map
-func castMap(obj interface{}) (map[string]interface{}, error) {
-	value, cast := obj.(map[string]interface{})
-	if !cast {
-		return nil, errors.New("failed to cast value to map")
-	}
-	return value, nil
-}
-
-// castSlice casts a value to a slice
-func castSlice(obj interface{}) ([]interface{}, error) {
-	value, cast := obj.([]interface{})
-	if !cast {
-		return nil, errors.New("failed to cast value to slice")
-	}
-	return value, nil
-}
-
-// castStringSlice casts a value to a string slice
-func castStringSlice(obj interface{}) ([]string, error) {
-	value, cast := obj.([]string)
-	if !cast {
-		return nil, errors.New("failed to cast value to string slice")
-	}
-	return value, nil
-}
-
-// castString casts a value to a string
-func castString(obj interface{}) (string, error) {
-	value, cast := obj.(string)
-	if !cast {
-		return "", errors.New("failed to cast value to string")
+// cast casts the supplied object into the supplied type
+func cast[T any](obj interface{}) (T, error) {
+	value, success := obj.(T)
+	if !success {
+		return value, fmt.Errorf("failed to cast value to %T", *new(T))
 	}
 	return value, nil
 }
 
 // castIntegerSlice casts a value to an integer slice
 func castIntegerSlice(obj interface{}) ([]int, error) {
-	value, cast := obj.([]int)
-	if !cast {
 
-		// Try to cast it into a float slice (the default when reading JSON)
-		floatSlice, cast := obj.([]float64)
-		if !cast {
+	// Try a regular cast
+	value, success := obj.([]int)
+	if success {
+		return value, nil
+	}
+
+	// Try to cast it into a float slice (the default when reading JSON)
+	floatSlice, success := obj.([]float64)
+	if !success {
+		return nil, errors.New("failed to cast value to integer slice")
+	}
+
+	// Managed to convert to a float slice, convert to an integer slice
+	intSlice := make([]int, len(floatSlice))
+	for i, v := range floatSlice {
+		intSlice[i] = int(v)
+
+		if float64(intSlice[i]) != v {
 			return nil, errors.New("failed to cast value to integer slice")
 		}
-
-		// Managed to convert to a float slice, convert to a integer slice
-		intSlice := make([]int, len(floatSlice))
-		for i, v := range floatSlice {
-			intSlice[i] = int(v)
-
-			if float64(intSlice[i]) != v {
-				return nil, errors.New("failed to cast value to integer slice")
-			}
-		}
-
-		return intSlice, nil
 	}
-	return value, nil
+
+	return intSlice, nil
 }
 
 // castInteger casts a value to an integer
 func castInteger(obj interface{}) (int, error) {
-	value, cast := obj.(int) // Try a regular integer cast
-	if !cast {
 
-		// Try to cast it into a float (the default when reading JSON) and then convert to int
-		floatValue, cast := obj.(float64)
-		if !cast {
-			return 0, errors.New("failed to cast value to integer")
-		}
-
-		if float64(int(floatValue)) != floatValue {
-			return 0, errors.New("failed to cast value to integer")
-		}
-
-		return int(floatValue), nil
+	// Try a regular integer cast
+	value, success := obj.(int)
+	if success {
+		return value, nil
 	}
-	return value, nil
-}
 
-// castBooleanSlice casts a value to a boolean slice
-func castBooleanSlice(obj interface{}) ([]bool, error) {
-	value, cast := obj.([]bool)
+	// Try to cast it into a float (the default when reading JSON) and then convert to int
+	floatValue, cast := obj.(float64)
 	if !cast {
-		return nil, errors.New("failed to cast value to boolean slice")
+		return 0, errors.New("failed to cast value to integer")
 	}
-	return value, nil
-}
 
-// castBoolean casts a value to a boolean
-func castBoolean(obj interface{}) (bool, error) {
-	value, cast := obj.(bool)
-	if !cast {
-		return false, errors.New("failed to cast value to boolean")
+	if float64(int(floatValue)) != floatValue {
+		return 0, errors.New("failed to cast value to integer")
 	}
-	return value, nil
-}
 
-// castFloatSlice casts a value to a float slice
-func castFloatSlice(obj interface{}) ([]float64, error) {
-	value, cast := obj.([]float64)
-	if !cast {
-		return nil, errors.New("failed to cast value to float slice")
-	}
-	return value, nil
-}
-
-// castFloat casts a value to a float
-func castFloat(obj interface{}) (float64, error) {
-	value, cast := obj.(float64)
-	if !cast {
-		return 0, errors.New("failed to cast value to float")
-	}
-	return value, nil
+	return int(floatValue), nil
 }
